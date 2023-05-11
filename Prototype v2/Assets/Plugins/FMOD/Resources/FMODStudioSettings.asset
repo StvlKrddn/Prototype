@@ -558,10 +558,10 @@ MonoBehaviour:
   m_Name: FMODStudioSettings
   m_EditorClassIdentifier: 
   switchSettingsMigration: 1
-  HasSourceProject: 1
-  HasPlatforms: 1
-  sourceProjectPath: ../FMOD/Prototype/Prototype.fspro
-  sourceBankPath: ../FMOD/Prototype/Build
+  HasSourceProject: 0
+  HasPlatforms: 0
+  sourceProjectPath: ../../../../FMOD/Projects/Prototype/Prototype.fspro
+  sourceBankPath: Assets/FMOD Builds
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 5
   ShowBankRefreshWindow: 1
