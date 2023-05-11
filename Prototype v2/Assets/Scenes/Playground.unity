@@ -570,21 +570,21 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: 555266454
-      Data2: 1192162092
-      Data3: -398759033
-      Data4: 1495171837
-    Path: event:/MyEvent
+      Data1: -1514574601
+      Data2: 1264077715
+      Data3: 1943366021
+      Data4: 1440741433
+    Path: event:/BackgroundMusic
   Event: 
-  PlayEvent: 0
-  StopEvent: 0
+  PlayEvent: 1
+  StopEvent: 2
   AllowFadeout: 1
   TriggerOnce: 0
   Preload: 0
   AllowNonRigidbodyDoppler: 0
   Params:
-  - Name: MyParameter
-    Value: 0.5
+  - Name: Panning
+    Value: 0
   OverrideAttenuation: 0
   OverrideMinDistance: 1
   OverrideMaxDistance: 20
