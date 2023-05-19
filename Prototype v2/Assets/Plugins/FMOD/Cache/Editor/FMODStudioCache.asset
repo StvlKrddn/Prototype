@@ -15,10 +15,10 @@ MonoBehaviour:
   Path: ../../../../FMOD/Projects/Prototype/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638194410114557668
+  lastModified: 638201360418585934
   FileSizes:
   - Name: Desktop
-    Value: 814
+    Value: 870
   Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -42,8 +42,32 @@ MonoBehaviour:
   - {fileID: 3749880230118165284}
   StringsBanks:
   - {fileID: -94169446869587679}
-  cacheTime: 638194410114557668
+  cacheTime: 638201360418585934
   cacheVersion: 131603
+--- !u!114 &1308076488497929861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/BackgroundMusic/RotationVolume
+  m_EditorClassIdentifier: 
+  Name: RotationVolume
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 1
+  ID:
+    data1: 9963276
+    data2: 2129188585
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &1803518856257002435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,10 +107,10 @@ MonoBehaviour:
   Path: ../../../../FMOD/Projects/Prototype/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638194410114557668
+  lastModified: 638201360418575960
   FileSizes:
   - Name: Desktop
-    Value: 10971712
+    Value: 4899808
   Exists: 1
 --- !u!114 &8888411883736765385
 MonoBehaviour:
@@ -113,6 +137,7 @@ MonoBehaviour:
   IsOneShot: 0
   Parameters:
   - {fileID: 1803518856257002435}
+  - {fileID: 1308076488497929861}
   MinDistance: 1
   MaxDistance: 20
   Length: 90149
