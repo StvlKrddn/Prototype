@@ -43,6 +43,9 @@ namespace StarterAssets
 		[Tooltip("What layers the character uses as ground")]
 		public LayerMask GroundLayers;
 
+		[Header("Animation")] 
+		public Animator playerAnimator;
+
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
 		public GameObject CinemachineCameraTarget;
@@ -127,6 +130,7 @@ namespace StarterAssets
 			// set sphere position, with offset
 			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
 			Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+			playerAnimator.SetBool("IsGrounded", Grounded);
 		}
 
 		private void CameraRotation()
@@ -193,6 +197,10 @@ namespace StarterAssets
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
 			}
+			
+			playerAnimator.SetBool("IsMoving", _input.move != Vector2.zero);
+			playerAnimator.SetFloat("VelocityX", _input.move.normalized.x);
+			playerAnimator.SetFloat("VelocityZ", _input.move.normalized.y);
 
 			// move the player
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
@@ -216,6 +224,7 @@ namespace StarterAssets
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					playerAnimator.SetTrigger("Jump");
 				}
 
 				// jump timeout
