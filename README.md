@@ -1,2 +1,2 @@
 # Prototype
-This is the prototype game I created for my university thesis
+This is the prototype game I created for my university thesis "Follow the Magic Flute"
