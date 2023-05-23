@@ -8,7 +8,6 @@ namespace Scrips
 {
     public class AudioManager : MonoBehaviour
     {
-        [SerializeField] private GameObject objective;
         [SerializeField] private Transform player;
         
         [SerializeField] private EventReference underscore;
@@ -16,12 +15,12 @@ namespace Scrips
         // [SerializeField] private float minVolume = 0;
         
         private EventHandler eventHandler;
-        // private GameManager gameManager;
-        // private PlayerState playerState;
+        private GameManager gameManager;
         private EventInstance underscoreEventInstance;
+        private GameObject currentTarget;
+        private Vector3 targetPosition;
         
         //private Transform player;
-        //private Vector3 objectivePosition;
         
         public static AudioManager instance { get; private set; }
 
@@ -37,13 +36,8 @@ namespace Scrips
             }
 
             eventHandler = EventHandler.instance;
-            // playerState = PlayerState.instance;
-            // gameManager = GameManager.instance;
+            gameManager = GameManager.instance;
 
-            eventHandler.RegisterListener<ObjectiveCompleteEvent>(OnNewObjective);
-            
-            // player = playerState.gameObject.transform;
-            
             // GameObject firstObjective = gameManager.objectives.Peek();
             
             // eventHandler.InvokeEvent(new NewObjectiveEvent(
@@ -67,32 +61,37 @@ namespace Scrips
         
         private void OnEnable()
         {
-            eventHandler.RegisterListener<ObjectiveCompleteEvent>(OnNewObjective);
+            eventHandler.RegisterListener<NewObjectiveEvent>(OnNewObjective);
+            eventHandler.RegisterListener<GameEndEvent>(OnGameEnd);
         }
 
         private void OnDisable()
         {
-            eventHandler.UnregisterListener<ObjectiveCompleteEvent>(OnNewObjective);
+            eventHandler.UnregisterListener<NewObjectiveEvent>(OnNewObjective);
+            eventHandler.UnregisterListener<GameEndEvent>(OnGameEnd);
         }
         
-        private void OnNewObjective(ObjectiveCompleteEvent completeEventInfo)
+        private void OnNewObjective(NewObjectiveEvent eventInfo)
         {
-            // currentObjective = gameManager.GetCurrentObjective();
-            // if (currentObjective == null)
-            // {
-            //     // NO MORE OBJECTIVES
-            //     return;
-            // }
-            // objectivePosition = currentObjective.GameObject.transform.position;
+            currentTarget = eventInfo.newObjective;
+            targetPosition = currentTarget.transform.position;
+            print(eventInfo.Description);
+        }
+
+        private void OnGameEnd(GameEndEvent eventInfo)
+        {
+            underscoreEventInstance.setParameterByName("Panning", 0);
+            underscoreEventInstance.setParameterByName("RotationVolume", 1);
         }
 
         private void Update()
         {
-            // Get the player's position
+            // Get the player's 2D (XZ) position and facing direction
             Vector2 playerPosition = new Vector2(player.position.x, player.position.z);
             Vector2 playerDirection = new Vector2(player.forward.x, player.forward.z);
-
-            Vector2 objectivePosition = new Vector2(objective.transform.position.x, objective.transform.position.z);
+            
+            // Get the objective's 2D (XZ) position
+            Vector2 objectivePosition = new Vector2(targetPosition.x, targetPosition.z);
 
             // Create a normalised vector between the player's and the current objective's position
             Vector2 objectiveDirection = objectivePosition - playerPosition;
@@ -109,8 +108,7 @@ namespace Scrips
             // Calculate the volume based on the angle
             var volume = Mathf.Lerp(0, 1, Mathf.Abs(angle - 180f) / 90f);
             
-            // audioSource.panStereo = pan;
-            // audioSource.volume = volume;
+            // Set the FMOD parameters for stereo-panning and volune of the lead flute
             underscoreEventInstance.setParameterByName("Panning", pan);
             underscoreEventInstance.setParameterByName("RotationVolume", volume);
         }

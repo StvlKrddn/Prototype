@@ -9,12 +9,10 @@ namespace EventSystem
     public class ObjectiveCompleteEvent : Event
     {
         public readonly GameObject completedObjective;
-        public readonly GameObject nextObjective;
         
-        public ObjectiveCompleteEvent(GameObject completedObjective, GameObject nextObjective, string description) : base(description)
+        public ObjectiveCompleteEvent(GameObject completedObjective, string description) : base(description)
         {
             this.completedObjective = completedObjective;
-            this.nextObjective = nextObjective;
         }
     }
 }

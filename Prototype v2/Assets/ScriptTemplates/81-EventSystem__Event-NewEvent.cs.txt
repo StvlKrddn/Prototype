@@ -1,0 +1,9 @@
+using EventSystem;
+
+public class #SCRIPTNAME# : Event
+{   
+    public #SCRIPTNAME#(string description) : base(description)
+    {
+        #NOTRIM#
+    }
+}

@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 813144329946617646}
   - component: {fileID: 3218993172739236836}
   - component: {fileID: 4388482825814825098}
+  - component: {fileID: 3257047290726786654}
+  - component: {fileID: 1320675726709198177}
   m_Layer: 0
   m_Name: MagicFlute
   m_TagString: MagicFlute
@@ -111,6 +113,32 @@ MonoBehaviour:
   bobbingSpeed: 2
   rotating: 1
   rotationSpeed: 5
+--- !u!114 &3257047290726786654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4011815892171620913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c3caa4f27d90d14b9a546bf21829c01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!136 &1320675726709198177
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4011815892171620913}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.4911208
+  m_Height: 0.8832258
+  m_Direction: 1
+  m_Center: {x: 0.018824846, y: -0.10482685, z: 0.0006556697}
 --- !u!1 &7752072133985986710
 GameObject:
   m_ObjectHideFlags: 0

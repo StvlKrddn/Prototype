@@ -1,17 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using EventSystem;
 using UnityEngine;
+using EventHandler = EventSystem.EventHandler;
 
 public class MagicFlute : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private EventHandler eventHandler;
+
+    private void Awake()
     {
-        
+        eventHandler = EventHandler.instance;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
+        eventHandler.InvokeEvent(new ObjectiveCompleteEvent(
+            completedObjective: gameObject,
+            description: gameObject.name + " was collected"
+            ));
     }
 }
