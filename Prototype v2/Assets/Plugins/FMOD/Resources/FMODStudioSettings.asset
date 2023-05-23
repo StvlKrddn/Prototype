@@ -434,7 +434,7 @@ MonoBehaviour:
       Value: 0
       HasValue: 0
     Overlay:
-      Value: 1
+      Value: 0
       HasValue: 1
     Logging:
       Value: 0
@@ -563,8 +563,8 @@ MonoBehaviour:
   sourceProjectPath: ../../../../FMOD/Projects/Prototype/Prototype.fspro
   sourceBankPath: ../../../../FMOD/Projects/Prototype/Build
   sourceBankPathUnformatted: 
-  BankRefreshCooldown: 5
-  ShowBankRefreshWindow: 1
+  BankRefreshCooldown: 1
+  ShowBankRefreshWindow: 0
   AutomaticEventLoading: 1
   BankLoadType: 0
   AutomaticSampleLoading: 0

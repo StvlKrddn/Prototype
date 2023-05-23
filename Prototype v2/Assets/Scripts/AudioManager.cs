@@ -37,14 +37,8 @@ namespace Scrips
 
             eventHandler = EventHandler.instance;
             gameManager = GameManager.instance;
+            targetPosition = gameManager.CurrentObjective.transform.position;
 
-            // GameObject firstObjective = gameManager.objectives.Peek();
-            
-            // eventHandler.InvokeEvent(new NewObjectiveEvent(
-            //     newObjectiveNode: firstObjective,
-            //     description: "First objective: " + firstObjective.GameObject.name
-            // ));
-            
             // Create an FMOD event instance that Unity can manipulate
             underscoreEventInstance = RuntimeManager.CreateInstance(underscore);
             
@@ -86,10 +80,18 @@ namespace Scrips
 
         private void Update()
         {
+            if (gameManager.GameIsActive)
+            {
+                UpdateAudio();
+            }
+        }
+        
+        private void UpdateAudio()
+        {
             // Get the player's 2D (XZ) position and facing direction
             Vector2 playerPosition = new Vector2(player.position.x, player.position.z);
             Vector2 playerDirection = new Vector2(player.forward.x, player.forward.z);
-            
+                
             // Get the objective's 2D (XZ) position
             Vector2 objectivePosition = new Vector2(targetPosition.x, targetPosition.z);
 
@@ -98,16 +100,16 @@ namespace Scrips
 
             // Calculate angle between objective and the player's direction
             var angle = Vector2.Angle(objectiveDirection, playerDirection);
-                
+                    
             // Determine if the target is to the left or right of the player
             var direction = Vector2.Dot(objectiveDirection, new Vector2(player.right.x, player.right.z)) > 0 ? 1 : -1;
-                
+                    
             // Calculate the pan value based on the angle and direction
             var pan = Mathf.Lerp(0, direction, angle / 90f);
-                
+                    
             // Calculate the volume based on the angle
             var volume = Mathf.Lerp(0, 1, Mathf.Abs(angle - 180f) / 90f);
-            
+                
             // Set the FMOD parameters for stereo-panning and volune of the lead flute
             underscoreEventInstance.setParameterByName("Panning", pan);
             underscoreEventInstance.setParameterByName("RotationVolume", volume);

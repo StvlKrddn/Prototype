@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     public Queue<GameObject> ObjectivesQueue { get; private set; }
     public GameObject CurrentObjective { get; private set; }
+    public bool GameIsActive { get; private set; }
+    public int Points { get; private set; }
 
     private EventHandler eventHandler;
 
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour
         
         eventHandler = EventHandler.instance;
         ObjectivesQueue = new Queue<GameObject>();
+        GameIsActive = true;
 
         foreach (Transform objective in objectivesContainer.transform)
         {
@@ -38,11 +41,6 @@ public class GameManager : MonoBehaviour
 
         CurrentObjective = ObjectivesQueue.Peek();
         CurrentObjective.SetActive(true);
-        
-        eventHandler.InvokeEvent(new NewObjectiveEvent(
-            newObjective: CurrentObjective,
-            description: CurrentObjective + " is the first objective"
-            ));
     }
     
     private void OnEnable()
@@ -58,6 +56,8 @@ public class GameManager : MonoBehaviour
     private void OnObjectiveComplete(ObjectiveCompleteEvent eventInfo)
     {
         print(eventInfo.Description);
+
+        Points++;
 
         ObjectivesQueue.Dequeue().SetActive(false);
         
@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     
     private void EndGame()
     {
+        GameIsActive = false;
         eventHandler.InvokeEvent(new GameEndEvent(
             description: "All objectives have been found"
             ));
