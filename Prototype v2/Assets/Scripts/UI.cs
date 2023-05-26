@@ -22,6 +22,9 @@ public class UI : MonoBehaviour
         gameManager = GameManager.instance;
 
         totalObjectives = gameManager.ObjectivesQueue.Count;
+        collectedObjectivesText.text = "Flutes collected: " + collectedObjectives + "/" + totalObjectives;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnEnable()
@@ -37,11 +40,6 @@ public class UI : MonoBehaviour
     private void OnObjectiveCompleted(ObjectiveCompleteEvent eventInfo)
     {
         collectedObjectives++;
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
         collectedObjectivesText.text = "Flutes collected: " + collectedObjectives + "/" + totalObjectives;
     }
 }

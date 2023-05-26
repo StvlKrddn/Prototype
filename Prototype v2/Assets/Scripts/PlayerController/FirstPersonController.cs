@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
+using EventHandler = EventSystem.EventHandler;
 
 namespace StarterAssets
 {
@@ -43,9 +45,6 @@ namespace StarterAssets
 		[Tooltip("What layers the character uses as ground")]
 		public LayerMask GroundLayers;
 
-		// [Header("Animation")] 
-		// public Animator playerAnimator;
-
 		[Header("Cinemachine")]
 		[Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
 		public GameObject CinemachineCameraTarget;
@@ -62,6 +61,7 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
+		private bool isMovementLocked;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -74,6 +74,7 @@ namespace StarterAssets
 		private CharacterController _controller;
 		private StarterAssetsInputs _input;
 		private GameObject _mainCamera;
+		private EventHandler eventHandler;
 
 		private const float _threshold = 0.01f;
 
@@ -96,6 +97,18 @@ namespace StarterAssets
 			{
 				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 			}
+
+			eventHandler = EventHandler.instance;
+		}
+
+		private void OnEnable()
+		{
+			eventHandler.RegisterListener<GamePausedEvent>(OnGamePaused);
+		}
+
+		private void OnDestroy()
+		{
+			eventHandler.RegisterListener<GamePausedEvent>(OnGamePaused);
 		}
 
 		private void Start()
@@ -115,14 +128,20 @@ namespace StarterAssets
 
 		private void Update()
 		{
-			JumpAndGravity();
-			GroundedCheck();
-			Move();
+			if (!isMovementLocked)
+			{
+				JumpAndGravity();
+				GroundedCheck();
+				Move();
+			}
 		}
 
 		private void LateUpdate()
 		{
-			CameraRotation();
+			if (!isMovementLocked)
+			{
+				CameraRotation();
+			}
 		}
 
 		private void GroundedCheck()
@@ -272,6 +291,12 @@ namespace StarterAssets
 
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
+		}
+
+		private void OnGamePaused(GamePausedEvent eventInfo)
+		{
+			print(eventInfo.Description);
+			isMovementLocked = eventInfo.gamePaused;
 		}
 	}
 }

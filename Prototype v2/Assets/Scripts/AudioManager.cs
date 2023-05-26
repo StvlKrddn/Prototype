@@ -3,6 +3,7 @@ using UnityEngine;
 using EventSystem;
 using EventHandler = EventSystem.EventHandler;
 using FMODUnity;
+using STOP_MODE = FMOD.Studio.STOP_MODE;
 
 namespace Scrips
 {
@@ -63,6 +64,8 @@ namespace Scrips
         {
             eventHandler.UnregisterListener<NewObjectiveEvent>(OnNewObjective);
             eventHandler.UnregisterListener<GameEndEvent>(OnGameEnd);
+
+            underscoreEventInstance.stop(STOP_MODE.IMMEDIATE);
         }
         
         private void OnNewObjective(NewObjectiveEvent eventInfo)
