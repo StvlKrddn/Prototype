@@ -61,7 +61,6 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
-		private bool isMovementLocked;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -74,7 +73,6 @@ namespace StarterAssets
 		private CharacterController _controller;
 		private StarterAssetsInputs _input;
 		private GameObject _mainCamera;
-		private EventHandler eventHandler;
 
 		private const float _threshold = 0.01f;
 
@@ -97,18 +95,6 @@ namespace StarterAssets
 			{
 				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 			}
-
-			eventHandler = EventHandler.instance;
-		}
-
-		private void OnEnable()
-		{
-			eventHandler.RegisterListener<GamePausedEvent>(OnGamePaused);
-		}
-
-		private void OnDestroy()
-		{
-			eventHandler.RegisterListener<GamePausedEvent>(OnGamePaused);
 		}
 
 		private void Start()
@@ -128,20 +114,14 @@ namespace StarterAssets
 
 		private void Update()
 		{
-			if (!isMovementLocked)
-			{
-				JumpAndGravity();
-				GroundedCheck();
-				Move();
-			}
+			JumpAndGravity();
+			GroundedCheck();
+			Move();
 		}
 
 		private void LateUpdate()
 		{
-			if (!isMovementLocked)
-			{
-				CameraRotation();
-			}
+			CameraRotation();
 		}
 
 		private void GroundedCheck()
@@ -291,12 +271,6 @@ namespace StarterAssets
 
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
-		}
-
-		private void OnGamePaused(GamePausedEvent eventInfo)
-		{
-			print(eventInfo.Description);
-			isMovementLocked = eventInfo.gamePaused;
 		}
 	}
 }

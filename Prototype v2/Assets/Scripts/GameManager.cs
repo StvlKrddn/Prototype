@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using EventSystem;
 using EventHandler = EventSystem.EventHandler;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance { get; private set; }
     
     [SerializeField] private GameObject objectivesContainer;
+    [SerializeField] private GameObject player;
 
     public Queue<GameObject> ObjectivesQueue { get; private set; }
     public GameObject CurrentObjective { get; private set; }
@@ -51,6 +53,24 @@ public class GameManager : MonoBehaviour
     private void OnDisable()
     {
         eventHandler.UnregisterListener<ObjectiveCompleteEvent>(OnObjectiveComplete);
+    }
+    
+    public void LockPlayerMovement(bool state)
+    {
+        PlayerInput playerInput = player.GetComponent<PlayerInput>();
+        
+        // If state is true
+        if (state)
+        {
+            // Deactivate player inputs
+            playerInput.DeactivateInput();
+        }
+        else
+        {
+            // Activate player input
+            playerInput.ActivateInput();
+        }
+        
     }
 
     private void OnObjectiveComplete(ObjectiveCompleteEvent eventInfo)
