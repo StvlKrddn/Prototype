@@ -1,6 +1,10 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Compilation;
 using UnityEngine;
+using Assembly = System.Reflection.Assembly;
 
 namespace EventSystem
 {
@@ -14,6 +18,8 @@ namespace EventSystem
 
         private delegate void EventListener(Event info);
 
+        private List<Event> eventList = new List<Event>();
+        
         private Dictionary<Type, List<EventListener>> listenerRegistry = new Dictionary<Type, List<EventListener>>();
 
         public static EventHandler instance { 
@@ -43,7 +49,40 @@ namespace EventSystem
                 Debug.LogError("More than one EventHandler! GameObject: " + gameObject.name);
             }
         }
-    
+
+        private void Awake()
+        {
+            InitializeEventDictionary();
+        }
+        
+        /**
+         * Fills the registry with all classes that derive from the Event class
+         */
+        private void InitializeEventDictionary()
+        {
+            // Create the registry
+            listenerRegistry = new Dictionary<Type, List<EventListener>>();
+            
+            // Get the type of Event
+            Type eventType = typeof(Event);
+            
+            // Get the C# Assembly
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            
+            // Get a list of all classes that are subclasses of Event and are not abstract
+            List<Type> eventTypes = assembly.GetTypes()
+                .Where(type => type.IsSubclassOf(eventType) && !type.IsAbstract)
+                .ToList();
+            
+            // Add each subclass to the registry
+            // The type of Event is the key and a list of Listeners is the value
+            foreach (var type in eventTypes)
+            {
+                listenerRegistry.Add(type, new List<EventListener>());
+            }
+        }
+
+
         /**
          * <summary>Register a listener method to a specific type of <c>Event</c> </summary>
          * <remarks>
@@ -69,18 +108,6 @@ namespace EventSystem
          */
         public void RegisterListener<TEvent>(Action<TEvent> listener) where TEvent : Event
         {
-            // Get the type of Event
-            Type eventType = typeof(TEvent);
-
-            // If the dictionary hasn't been declared yet
-            listenerRegistry ??= new Dictionary<Type, List<EventListener>>();
-
-            // If the event hasn't been registered before
-            if (!listenerRegistry.ContainsKey(eventType))
-            {
-                listenerRegistry[eventType] = new List<EventListener>();
-            }
-
             // Wrap listener call to return an EventListener
             void Wrapper(Event eventInfo)
             {
@@ -88,7 +115,7 @@ namespace EventSystem
             }
 
             // Add listener to the Event
-            listenerRegistry[eventType].Add(Wrapper);
+            listenerRegistry[typeof(TEvent)].Add(Wrapper);
         }
         
         /**

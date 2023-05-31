@@ -20,6 +20,7 @@ namespace Scrips
         private EventInstance underscoreEventInstance;
         private GameObject currentTarget;
         private Vector3 targetPosition;
+        private bool updateAudio;
         
         //private Transform player;
         
@@ -52,6 +53,8 @@ namespace Scrips
                 // Play the event instance
                 underscoreEventInstance.start();
             }
+            
+            updateAudio = true;
         }
         
         private void OnEnable()
@@ -60,7 +63,7 @@ namespace Scrips
             eventHandler.RegisterListener<GameEndEvent>(OnGameEnd);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             eventHandler.UnregisterListener<NewObjectiveEvent>(OnNewObjective);
             eventHandler.UnregisterListener<GameEndEvent>(OnGameEnd);
@@ -79,11 +82,12 @@ namespace Scrips
         {
             underscoreEventInstance.setParameterByName("Panning", 0);
             underscoreEventInstance.setParameterByName("RotationVolume", 1);
+            updateAudio = false;
         }
 
         private void Update()
         {
-            if (gameManager.GameIsActive)
+            if (updateAudio)
             {
                 UpdateAudio();
             }

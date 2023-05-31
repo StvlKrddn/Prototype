@@ -50,8 +50,6 @@ public class PauseMenu : MonoBehaviour
             gamePaused: isPaused,
             description: "Escape was pressed"
         ));
-        
-        Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
     }
     
     public void QuitGame()
