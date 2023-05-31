@@ -11,11 +11,13 @@ public class DialougeScript : MonoBehaviour
     [SerializeField] private GameObject clickIcon;
     [SerializeField] private GameObject instructionObject;
     [SerializeField] private GameObject collectedObject;
+    [SerializeField] private GameObject dialogueSkip;
     
     [SerializeField] private int clickDelay = 2;
 
     private InputAction nextAction;
     private EventHandler eventHandler;
+    private GameManager gameManager;
     
     private List<GameObject> boxes = new List<GameObject>();
 
@@ -29,10 +31,8 @@ public class DialougeScript : MonoBehaviour
         }
         
         eventHandler = EventHandler.instance;
-        
-        //StartCoroutine(StartDialouge());
-        //InvokeRepeating(nameof(IterateBox), startDelay + scrollSpeed, scrollSpeed);
-        
+        gameManager = GameManager.instance;
+
         boxContainer.parent.gameObject.SetActive(true);
         boxes[0].SetActive(true);
 
@@ -54,8 +54,10 @@ public class DialougeScript : MonoBehaviour
 
     private void OnMouseClicked(InputAction.CallbackContext context)
     {
-        if (allowedToContinue)
+        if (allowedToContinue && gameManager.GameIsActive)
         {
+            allowedToContinue = false;
+            clickIcon.SetActive(false);
             StartCoroutine(ClickDelay());
             IterateBox();
         }
@@ -63,8 +65,6 @@ public class DialougeScript : MonoBehaviour
 
     private IEnumerator ClickDelay()
     {
-        allowedToContinue = false;
-        clickIcon.SetActive(false);
         yield return new WaitForSeconds(clickDelay);
         clickIcon.SetActive(true);
         allowedToContinue = true;
@@ -83,32 +83,45 @@ public class DialougeScript : MonoBehaviour
     private void IterateBox()
     {
         int activeBoxIndex = 0;
-        foreach (GameObject box in boxes)
+        
+        foreach (var box in boxes)
         {
             if (box.activeSelf)
             {
                 activeBoxIndex = boxes.IndexOf(box);
             }
         }
-
+        
+        if (!gameManager.ShowIntroduction && activeBoxIndex < boxes.Count - 1 && boxes[activeBoxIndex + 1].name is "ToTheLeft" or "Listen")
+        {
+            activeBoxIndex = boxes.Count - 1;
+            SetBoxActive(activeBoxIndex);
+            return;
+        }
         if (activeBoxIndex < boxes.Count - 1)
         {
-            SetBoxActive(++activeBoxIndex);
+            SetBoxActive(activeBoxIndex + 1);
+            return;
         }
-        else if (activeBoxIndex == boxes.Count - 1)
+        if (activeBoxIndex == boxes.Count - 1)
         {
-            foreach (GameObject box in boxes)
-            {
-                box.SetActive(false);
-                boxContainer.parent.gameObject.SetActive(false);
-            }
-            CancelInvoke(nameof(IterateBox));
-            instructionObject.SetActive(true);
-            collectedObject.SetActive(true);
-            
-            eventHandler.InvokeEvent(new IntroSequenceCompleteEvent(
-                description: "Intro sequence complete"
-                ));
+            EndDialouge();
         }
+    }
+    
+    private void EndDialouge()
+    {
+        foreach (GameObject box in boxes)
+        {
+            box.SetActive(false);
+            boxContainer.parent.gameObject.SetActive(false);
+        }
+        CancelInvoke(nameof(IterateBox));
+        instructionObject.SetActive(true);
+        collectedObject.SetActive(true);
+            
+        eventHandler.InvokeEvent(new IntroSequenceCompleteEvent(
+            description: "Intro sequence complete"
+        ));
     }
 }

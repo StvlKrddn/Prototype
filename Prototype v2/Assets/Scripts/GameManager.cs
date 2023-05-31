@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using EventSystem;
+using StarterAssets;
 using EventHandler = EventSystem.EventHandler;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private bool showIntroduction;
     [SerializeField] private GameObject objectivesContainer;
-    [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private GameObject player;
 
     public Queue<GameObject> ObjectivesQueue { get; private set; }
     public GameObject CurrentObjective { get; private set; }
@@ -21,6 +22,9 @@ public class GameManager : MonoBehaviour
     public bool ShowIntroduction { get; private set; }
 
     private EventHandler eventHandler;
+    private bool isIntroPlaying = true;
+    private PlayerInput playerInput;
+    private FirstPersonController controller;
 
     private void Awake()
     {
@@ -35,7 +39,6 @@ public class GameManager : MonoBehaviour
         
         eventHandler = EventHandler.instance;
         ObjectivesQueue = new Queue<GameObject>();
-        GameIsActive = true;
 
         foreach (Transform objective in objectivesContainer.transform)
         {
@@ -46,8 +49,14 @@ public class GameManager : MonoBehaviour
         CurrentObjective = ObjectivesQueue.Peek();
         CurrentObjective.SetActive(true);
 
+        playerInput = player.GetComponent<PlayerInput>();
+        controller = player.GetComponent<FirstPersonController>();
+
         ShowIntroduction = showIntroduction;
-        
+
+        GameIsActive = true;
+
+        controller.enabled = false;
         LockPlayerMovement(true);
     }
     
@@ -92,21 +101,20 @@ public class GameManager : MonoBehaviour
     {
         GameIsActive = !eventInfo.gamePaused;
 
-        LockPlayerMovement(!GameIsActive);
+        if (!isIntroPlaying)
+        {
+            LockPlayerMovement(!GameIsActive);
+        }
         Cursor.lockState = GameIsActive ? CursorLockMode.Locked : CursorLockMode.None;
     }
 
     private void OnIntroComplete(IntroSequenceCompleteEvent eventInfo)
     {
         LockPlayerMovement(false);
+        controller.enabled = true;
+        isIntroPlaying = false;
     }
-    
-    private IEnumerator IntroductionSequence()
-    {
-        yield return new WaitForSeconds(2 + 5 * 4);
-        LockPlayerMovement(false);
-    }
-    
+
     private void LockPlayerMovement(bool state)
     {
         // If state is true
