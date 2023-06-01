@@ -6,6 +6,7 @@ using StarterAssets;
 using EventHandler = EventSystem.EventHandler;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,16 +15,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool showIntroduction;
     [SerializeField] private GameObject objectivesContainer;
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject resetPoint;
 
     public Queue<GameObject> ObjectivesQueue { get; private set; }
     public GameObject CurrentObjective { get; private set; }
-    public bool GameIsActive { get; private set; }
     public int Points { get; private set; }
     public bool ShowIntroduction { get; private set; }
 
     private EventHandler eventHandler;
-    private bool isIntroPlaying = true;
-    private PlayerInput playerInput;
+    private bool isTutorialPlaying = true;
     private FirstPersonController controller;
 
     private void Awake()
@@ -48,30 +48,27 @@ public class GameManager : MonoBehaviour
 
         CurrentObjective = ObjectivesQueue.Peek();
         CurrentObjective.SetActive(true);
-
-        playerInput = player.GetComponent<PlayerInput>();
+        
         controller = player.GetComponent<FirstPersonController>();
 
         ShowIntroduction = showIntroduction;
 
-        GameIsActive = true;
-
-        controller.enabled = false;
-        LockPlayerMovement(true);
+        LockPlayerMovement(ShowIntroduction);
+        isTutorialPlaying = ShowIntroduction;
     }
     
     private void OnEnable()
     {
         eventHandler.RegisterListener<ObjectiveCompleteEvent>(OnObjectiveComplete);
         eventHandler.RegisterListener<GamePausedEvent>(OnGamePaused);
-        eventHandler.RegisterListener<IntroSequenceCompleteEvent>(OnIntroComplete);
+        eventHandler.RegisterListener<TextSequenceCompleteEvent>(OnTextSequenceComplete);
     }
 
     private void OnDestroy()
     {
         eventHandler.UnregisterListener<ObjectiveCompleteEvent>(OnObjectiveComplete);
         eventHandler.UnregisterListener<GamePausedEvent>(OnGamePaused);
-        eventHandler.UnregisterListener<IntroSequenceCompleteEvent>(OnIntroComplete);
+        eventHandler.UnregisterListener<TextSequenceCompleteEvent>(OnTextSequenceComplete);
     }
 
     private void OnObjectiveComplete(ObjectiveCompleteEvent eventInfo)
@@ -84,7 +81,7 @@ public class GameManager : MonoBehaviour
         
         if (ObjectivesQueue.Count == 0)
         {
-            EndGame();
+            StartEndSequence();
             return;
         }
         
@@ -99,41 +96,69 @@ public class GameManager : MonoBehaviour
     
     private void OnGamePaused(GamePausedEvent eventInfo)
     {
-        GameIsActive = !eventInfo.gamePaused;
-
-        if (!isIntroPlaying)
+        bool isGamePaused = eventInfo.gamePaused;
+        
+        if (showIntroduction)
         {
-            LockPlayerMovement(!GameIsActive);
+            // Game is paused
+            if (isGamePaused)
+            {
+                LockPlayerMovement(true);
+                Cursor.lockState = CursorLockMode.None;
+                return;
+            }
+            
+            // Game is unpaused but tutorial is still playing
+            if (!isGamePaused && isTutorialPlaying)
+            {
+                LockPlayerMovement(true);
+                Cursor.lockState = CursorLockMode.None;
+                return;
+            }
+            
+            // Game is unpaused and tutorial is not playing
+            if (!isGamePaused && !isTutorialPlaying)
+            {
+                LockPlayerMovement(false);
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
-        Cursor.lockState = GameIsActive ? CursorLockMode.Locked : CursorLockMode.None;
+        else
+        {
+            LockPlayerMovement(isGamePaused);
+            
+            Cursor.lockState = isGamePaused ? CursorLockMode.None : CursorLockMode.Locked;
+        }
     }
 
-    private void OnIntroComplete(IntroSequenceCompleteEvent eventInfo)
+    private void OnTextSequenceComplete(TextSequenceCompleteEvent eventInfo)
     {
-        LockPlayerMovement(false);
-        controller.enabled = true;
-        isIntroPlaying = false;
+        if (eventInfo.CompletedSequenceName.Equals("Tutorial"))
+        {
+            isTutorialPlaying = false;
+            LockPlayerMovement(false);
+        }
+        else
+        {
+            StartCoroutine(ShutDownTimer());
+        }
+        
+        IEnumerator ShutDownTimer()
+        {
+            yield return new WaitForSeconds(1);
+            SceneManager.LoadScene(0);
+        }
     }
 
     private void LockPlayerMovement(bool state)
     {
-        // If state is true
-        if (state)
-        {
-            // Deactivate player inputs
-            playerInput.DeactivateInput();
-        }
-        else
-        {
-            // Activate player input
-            playerInput.ActivateInput();
-        }
-        
+        controller.enabled = !state;
     }
     
-    private void EndGame()
+    private void StartEndSequence()
     {
-        GameIsActive = false;
+        LockPlayerMovement(true);
+        
         eventHandler.InvokeEvent(new GameEndEvent(
             description: "All objectives have been found"
             ));
