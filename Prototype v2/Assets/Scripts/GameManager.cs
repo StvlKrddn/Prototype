@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool showIntroduction;
     [SerializeField] private GameObject objectivesContainer;
     [SerializeField] private GameObject player;
-    [SerializeField] private GameObject resetPoint;
 
     public Queue<GameObject> ObjectivesQueue { get; private set; }
     public GameObject CurrentObjective { get; private set; }
@@ -138,14 +137,8 @@ public class GameManager : MonoBehaviour
             isTutorialPlaying = false;
             LockPlayerMovement(false);
         }
-        else
+        else if (eventInfo.CompletedSequenceName.Equals("Ending"))
         {
-            StartCoroutine(ShutDownTimer());
-        }
-        
-        IEnumerator ShutDownTimer()
-        {
-            yield return new WaitForSeconds(1);
             SceneManager.LoadScene(0);
         }
     }
