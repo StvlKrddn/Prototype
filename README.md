@@ -7,6 +7,8 @@ Two builds of the prototype can be found in the Unity project folder (Prototype 
 
 Feel free to download this project and use it for further research. 
 
+Here is a showcase video of the prototype: https://youtu.be/ZgvvE76dztI
+
 
 Credits for assets used in the prototype: 
 
